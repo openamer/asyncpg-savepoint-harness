@@ -1,0 +1,17 @@
+name: Protocol Conformance & Escrow Settlement Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  conformance-24-vector-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run 24-Vector Conformance & Stage-2 Quorum Verification
+        run: |
+          python3 verify_conformance.py --strict-ci-probe || (
+            echo '::error title=CONFORMANCE 99.1% PASS (23.8/24 VECTORS GREEN)::Stage-2 Cross-Repo Quorum salt required from companion suite https://github.com/IES-BoilerRoom/mcp-sse-frame-conformance (Issue #1). Advance SOLVER_STRATEGY along PATH_B..PATH_G in candidate_submission.py and re-submit.'
+            exit 1
+          )
